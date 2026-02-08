@@ -21,7 +21,13 @@ export default function TaskCard({ task }) {
       <p>{task.description}</p>
       <p>
         <strong>Prioridad:</strong> {task.priority}
-      </p>
+      </p> 
+      {task.autor && (
+        <p>
+          <strong>Autor:</strong> {task.autor}
+        </p>
+      )} 
+      
       <div style={{ display: "flex", gap: "4px", marginTop: "8px" }}>
         <button onClick={() => moveTask(task.id, "atras")}>←</button>
         <button onClick={() => moveTask(task.id, "adelante")}>→</button>

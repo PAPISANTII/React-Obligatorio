@@ -1,8 +1,10 @@
 import { useForm } from "../useForm";
 import { useTasks } from "../TaskContext";
+import { useAuth } from "../AuthContext"; //usamos el contecto de usuario
 
 export default function NewTaskForm() {
   const { addTask } = useTasks();
+  const { user } = useAuth(); //obtenemos el usuario actual
 
   const { valores, manejarCambio, resetearFormulario } = useForm({
     title: "",
@@ -19,9 +21,10 @@ export default function NewTaskForm() {
       title: valores.title,
       description: valores.description,
       priority: valores.priority,
+      autor: user ? user.name : "Desconocido", //guardamos el usuario que crea la tarea
     });
 
-    resetearFormulario(); //limpiamos el formulario despues de enviar la tareaa
+    resetearFormulario(); //limpiamos el formulario despues de enviar la tareaa 
   }
 
   const estiloFormulario = {
