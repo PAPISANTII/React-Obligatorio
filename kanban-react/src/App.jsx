@@ -13,35 +13,36 @@ function App() { //componente principal de la aplicacion
 
   const { user, iniciarSesion } = useAuth(); //usuario y función para iniciar sesión
 
-  useEffect(() => {
-    if (user) return; //si ya hay usuario, no mostramos One Tap
+useEffect(() => {
+  if (user) return; //si ya hay usuario, no mostramos One Tap
 
-    const script = document.createElement("script");
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
+  //si el script de Google ya existe, no lo volvemos a crear
+  if (document.getElementById("google-identity")) return;
 
-    script.onload = () => {
-      window.google.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID, //usamos el client ID de nuestro .env
-        callback: manejarCredencial,
-      });
+  const script = document.createElement("script");
+  script.id = "google-identity";             //id para identificarlo
+  script.src = "https://accounts.google.com/gsi/client";
+  script.async = true;
+  script.defer = true;
+  document.body.appendChild(script);
 
-      window.google.accounts.id.prompt(); //muestra la ventana de One Tap
-    };
+  script.onload = () => {
+    window.google.accounts.id.initialize({
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+      callback: manejarCredencial,
+    });
 
-    function manejarCredencial(respuesta) {
-      //cuando Google responde con el token iniciamos sesion en nuestra app
-      iniciarSesion(respuesta.credential);
-    }
+    window.google.accounts.id.prompt();
+  };
 
-    return () => {
-      if (script.parentNode) {
-        script.parentNode.removeChild(script); //limpiamos el script si se desmonta
-      }
-    };
-  }, [user, iniciarSesion]);
+  function manejarCredencial(respuesta) {
+    iniciarSesion(respuesta.credential);
+  }
+
+  return () => {
+    //limpiamos el script al desmontar el componente para evitar problemas si el usuario cierra sesión y vuelve a abrirla
+  };
+}, [user, iniciarSesion]);
 
 
   //formulario de nueva tarea y las tres columnas
